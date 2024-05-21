@@ -1,6 +1,9 @@
 package com.cong.nanobatis.test;
 
-import com.cong.nanobatis.MapperProxyFactory;
+import com.cong.nanobatis.binding.MapperRegistry;
+import com.cong.nanobatis.session.SqlSession;
+import com.cong.nanobatis.session.SqlSessionFactory;
+import com.cong.nanobatis.session.defaults.DefaultSqlSessionFactory;
 import com.cong.nanobatis.test.dao.UserDao;
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Map;
 
 
 
@@ -25,17 +26,21 @@ public class ApiTest {
 
     @Test
     public void test_MapperProxyFactory() {
-        MapperProxyFactory<UserDao> factory = new MapperProxyFactory<>(UserDao.class);
-        //在单测中创建 MapperProxyFactory 工厂，并手动给 sqlSession Map 赋值，这里的赋值相当于模拟数据库中的操作
-        Map<String, String> sqlSession = new HashMap<>();
-        sqlSession.put("com.cong.nanobatis.test.dao.UserDao.queryUserName", "模拟执行 Mapper.xml 中 SQL 语句的操作：查询用户姓名");
-        sqlSession.put("com.cong.nanobatis.test.dao.UserDao.queryUserAge", "模拟执行 Mapper.xml 中 SQL 语句的操作：查询用户年龄");
-        //接下来再把赋值信息传递给代理对象实例化操作，这样就可以在我们调用具体的 DAO 方法时从 sqlSession 中取值了
-        UserDao userDao = factory.newInstance(sqlSession);
+        // 1. 注册 Mapper
+        MapperRegistry registry = new MapperRegistry();
+        registry.addMappers("com.cong.nanobatis.test.dao");
 
+        // 2. 从 SqlSession 工厂获取 Session
+        SqlSessionFactory sqlSessionFactory = new DefaultSqlSessionFactory(registry);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
+        // 3. 获取映射器对象
+        UserDao userDao = sqlSession.getMapper(UserDao.class);
+
+        // 4. 测试验证
         String res = userDao.queryUserName("10001");
-        Assert.assertNotNull(res);
         logger.info("测试结果：{}", res);
+        Assert.assertNotNull(res);
     }
 
     @Test
