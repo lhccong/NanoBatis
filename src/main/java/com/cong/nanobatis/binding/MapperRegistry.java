@@ -2,6 +2,7 @@ package com.cong.nanobatis.binding;
 
 import cn.hutool.core.lang.ClassScanner;
 import com.cong.nanobatis.exception.NanobatisException;
+import com.cong.nanobatis.session.Configuration;
 import com.cong.nanobatis.session.SqlSession;
 
 import java.util.HashMap;
@@ -15,6 +16,12 @@ import java.util.Set;
  * @date 2024/05/21
  */
 public class MapperRegistry {
+
+    private Configuration config;
+
+    public MapperRegistry(Configuration config) {
+        this.config = config;
+    }
 
     /**
      * 将已添加的映射器代理加入到 HashMap
