@@ -1,4 +1,6 @@
-package com.cong.nanobatis;
+package com.cong.nanobatis.binding;
+
+import com.cong.nanobatis.session.SqlSession;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -15,12 +17,12 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 
     private static final long serialVersionUID = -469152714367086161L;
 
-    //所有的数据库语句操作，都是通过接口名称+方法名称作为key，操作作为逻辑的方式进行使用的
-    private final Map<String, String> sqlSession;
+    //所有的数据库语句操作
+    private final SqlSession sqlSession;
 
     private final Class<T> mapperInterface;
 
-    public MapperProxy(Map<String, String> sqlSession, Class<T> mapperInterface) {
+    public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface) {
         this.sqlSession = sqlSession;
         this.mapperInterface = mapperInterface;
     }
@@ -32,7 +34,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             return method.invoke(this, args);
         } else {
             //获取接口名称+方法名称作为key
-            return "没想到吧！！你被我代理啦~~~~~！" + sqlSession.get(mapperInterface.getName() + "." + method.getName());
+            return sqlSession.selectOne(method.getName(), args);
         }
     }
 }
