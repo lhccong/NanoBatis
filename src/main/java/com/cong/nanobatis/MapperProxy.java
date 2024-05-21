@@ -31,7 +31,8 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         if (Object.class.equals(method.getDeclaringClass())) {
             return method.invoke(this, args);
         } else {
-            return "你的被代理了！" + sqlSession.get(mapperInterface.getName() + "." + method.getName());
+            //获取接口名称+方法名称作为key
+            return "没想到吧！！你被我代理啦~~~~~！" + sqlSession.get(mapperInterface.getName() + "." + method.getName());
         }
     }
 }
