@@ -1,6 +1,6 @@
 package com.cong.nanobatis.session.defaults;
 
-import com.cong.nanobatis.binding.MapperRegistry;
+import com.cong.nanobatis.session.Configuration;
 import com.cong.nanobatis.session.SqlSession;
 import com.cong.nanobatis.session.SqlSessionFactory;
 
@@ -12,15 +12,15 @@ import com.cong.nanobatis.session.SqlSessionFactory;
  */
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
-    private final MapperRegistry mapperRegistry;
+    private final Configuration configuration;
 
-    public DefaultSqlSessionFactory(MapperRegistry mapperRegistry) {
-        this.mapperRegistry = mapperRegistry;
+    public DefaultSqlSessionFactory(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSession(mapperRegistry);
+        return new DefaultSqlSession(configuration);
     }
 
 }
