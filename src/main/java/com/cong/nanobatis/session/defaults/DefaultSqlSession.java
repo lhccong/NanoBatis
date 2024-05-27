@@ -6,6 +6,7 @@ import com.cong.nanobatis.mapping.MappedStatement;
 import com.cong.nanobatis.session.Configuration;
 import com.cong.nanobatis.session.SqlSession;
 
+import java.util.Date;
 import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,16 +39,17 @@ public class DefaultSqlSession implements SqlSession {
         try {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
             Environment environment = configuration.getEnvironment();
-
-            Connection connection = environment.getDataSource().getConnection();
-
             BoundSql boundSql = mappedStatement.getBoundSql();
-            PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql());
-            preparedStatement.setLong(1, Long.parseLong(((Object[]) parameter)[0].toString()));
-            ResultSet resultSet = preparedStatement.executeQuery();
+            try (Connection connection = environment.getDataSource().getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql())) {
+                preparedStatement.setLong(1, Long.parseLong(((Object[]) parameter)[0].toString()));
+                ResultSet resultSet = preparedStatement.executeQuery();
 
-            List<T> objList = resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
-            return objList.get(0);
+                List<T> objList = resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
+                return objList.get(0);
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;
