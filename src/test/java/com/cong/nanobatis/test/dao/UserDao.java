@@ -1,5 +1,7 @@
 package com.cong.nanobatis.test.dao;
 
+import com.cong.nanobatis.test.po.User;
+
 /**
  * 用户 DAO
  *
@@ -13,13 +15,5 @@ public interface UserDao {
      * @param uId u id
      * @return {@link String }
      */
-    String queryUserName(String uId);
-
-    /**
-     * 查询用户年龄
-     *
-     * @param uId u id
-     * @return {@link Integer }
-     */
-    Integer queryUserAge(String uId);
+    User queryUserInfoById(Long uId);
 }
